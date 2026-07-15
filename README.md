@@ -1,1 +1,65 @@
-# csv-query-agent
+# 🤖 data-chat
+
+AI-powered data analyst agent built with LangChain and LangGraph. Upload any CSV and query it using natural language — gets you SQL results and charts instantly.
+
+![App Screenshot](assets/screenshot.png)
+
+---
+
+## Features
+
+- 💬 **Natural language queries** — ask questions in plain English, get SQL results back
+- 📊 **Auto-generated charts** — bar, line, pie, scatter, histogram charts on demand
+- 🔐 **User authentication** — login, register, sessions per user
+- 🗂️ **Persistent chat history** — previous chats saved, renameable and deletable
+- ⚡ **Fast inference** — powered by Groq's LPU hardware at 1000+ tokens/sec
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Agent Framework | LangGraph + LangChain |
+| LLM | OpenAI GPT-OSS 20B via Groq |
+| Database | SQLite |
+| Charts | Plotly |
+| UI | Streamlit |
+| Language | Python |
+
+---
+
+## How It Works
+
+1. User uploads a CSV file
+2. CSV is loaded into a SQLite database
+3. LangGraph ReAct agent receives the user's question
+4. Agent calls `execute_sql_query` to fetch data
+5. Agent calls `create_chart` if a visualization is requested
+6. Results and charts are displayed in the chat interface
+
+---
+
+
+## Project Structure
+
+```
+data-chat/
+├── app.py              # Streamlit UI
+├── graph.py            # LangGraph ReAct agent
+├── db.py               # CSV → SQLite loader
+├── sql_tool.py         # SQL execution tool
+├── chart_tool.py       # Chart generation tool
+├── chat_store.py       # Auth + persistent chat history
+└── requirements.txt
+```
+
+---
+
+## Example Queries
+
+- `show me the first 10 rows`
+- `what is total sales by region as a bar chart`
+- `which product category has the highest revenue`
+- `compare online vs retail sales channel as a pie chart`
+- `calculate profit per category using unit price minus unit cost`
