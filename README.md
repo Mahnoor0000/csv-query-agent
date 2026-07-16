@@ -2,6 +2,7 @@
 
 AI-powered data analyst agent built with LangChain and LangGraph. Upload any CSV and query it using natural language — gets you SQL results and charts instantly.
 
+## Demo: https://csv-query-agentgit-m2ts5ftehfolzcvwbskqbl.streamlit.app/
 ---
 
 ## Features
