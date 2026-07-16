@@ -11,8 +11,6 @@ AI-powered data analyst agent built with LangChain and LangGraph. Upload any CSV
 - 📊 **Auto-generated charts** — bar, line, pie, scatter, histogram charts on demand
 - 🔐 **User authentication** — login, register, sessions per user
 - 🗂️ **Persistent chat history** — previous chats saved, renameable and deletable
-- ⚡ **Fast inference** — powered by Groq's LPU hardware at 1000+ tokens/sec
-
 ---
 
 ## Tech Stack
