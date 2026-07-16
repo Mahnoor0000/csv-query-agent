@@ -1,4 +1,4 @@
-# 🤖 data-chat
+# 🤖 CSV Query Agent
 
 AI-powered data analyst agent built with LangChain and LangGraph. Upload any CSV and query it using natural language — gets you SQL results and charts instantly.
 
@@ -62,3 +62,16 @@ data-chat/
 - `which product category has the highest revenue`
 - `compare online vs retail sales channel as a pie chart`
 - `calculate profit per category using unit price minus unit cost`
+
+## Limitations
+
+**Groq Free Tier Rate Limits**
+
+This app uses Groq's free tier which has a limit of **8,000 tokens per minute**.
+Each question the agent answers consumes roughly 2,000–4,000 tokens
+(schema call + SQL query + response). This means:
+
+- You may hit the limit after 2–3 quick questions
+- If you see a rate limit error, wait 60 seconds and try again
+- Large datasets with complex queries consume more tokens
+
