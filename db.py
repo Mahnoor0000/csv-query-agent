@@ -18,7 +18,10 @@ def set_db_path(path: str):
 def load_csv(file, db_path: str) -> pd.DataFrame:
     global _db_path
     # convert csv to pandas dataframe
-    df = pd.read_csv(file)  
+    try:
+        df = pd.read_csv(file, encoding="utf-8")
+    except UnicodeDecodeError:
+        df = pd.read_csv(file, encoding="latin-1")
     # make sqlite connection for db_path
     conn = sqlite3.connect(db_path)  
     # write dataframe in sqlite
