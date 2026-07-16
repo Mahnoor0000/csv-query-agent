@@ -7,6 +7,7 @@ CHART_REGISTRY = {}
 
 
 def clear_charts():
+    # called before every new user question in app.py
     CHART_REGISTRY.clear()
 
 
@@ -22,12 +23,15 @@ def create_chart(sql_query: str, chart_type: str, x_column: str, y_column: str, 
         title:      Title of the chart
     """
     try:
+        # run the SQL query to get the data to plot
         df = run_query(sql_query)
 
         if df.empty:
             return "No data returned for chart."
 
         chart_type = chart_type.lower()
+
+        # build the correct Plotly figure based on chart type
 
         if chart_type == "bar":
             fig = px.bar(df, x=x_column, y=y_column, title=title)
@@ -44,8 +48,12 @@ def create_chart(sql_query: str, chart_type: str, x_column: str, y_column: str, 
         else:
             fig = px.bar(df, x=x_column, y=y_column, title=title)
 
-        # store chart so Streamlit can render it
+        # give this chart a unique ID based on how many charts exist so far
         chart_id = f"chart_{len(CHART_REGISTRY) + 1}"
+
+        # serialize the Plotly figure to a JSON string and store it
+        # fig.to_json() converts the entire figure including data and layout
+        # app.py later does pio.from_json() to convert it back to a figure
         CHART_REGISTRY[chart_id] = fig.to_json()
 
         return f"Chart '{title}' created successfully."

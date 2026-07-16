@@ -25,9 +25,11 @@ def execute_sql_query(query: str) -> str:
         return "Error: Only SELECT queries are allowed."
 
     try:
+        # run the SQL against the current chat's SQLite file via db.py
         df = run_query(query)
         if df.empty:
             return "Query returned no results."
+        # convert results to markdown table so the agent can read them as text
         return df.head(100).to_markdown(index=False)
     except Exception as e:
         return f"SQL Error: {str(e)}"

@@ -3,18 +3,23 @@ import hashlib
 import uuid
 from datetime import datetime
 
-STORE_DB = "chat_store.db"
+
+# single SQLite file that stores all users, chats, and messages
+STORE_DB = "chat_store.db" # app data
 
 
 def init_db():
+    # called once when app starts
     conn = sqlite3.connect(STORE_DB)
     c = conn.cursor()
+     # users table — one row per registered user
     c.execute("""CREATE TABLE IF NOT EXISTS users (
         id TEXT PRIMARY KEY,
         username TEXT UNIQUE NOT NULL,
         password_hash TEXT NOT NULL,
         created_at TEXT
     )""")
+     # chat table — one row per chat session
     c.execute("""CREATE TABLE IF NOT EXISTS chats (
         id TEXT PRIMARY KEY,
         user_id TEXT NOT NULL,
@@ -24,6 +29,7 @@ def init_db():
         created_at TEXT,
         updated_at TEXT
     )""")
+     # message table — one row per registered message
     c.execute("""CREATE TABLE IF NOT EXISTS messages (
         id TEXT PRIMARY KEY,
         chat_id TEXT NOT NULL,
@@ -37,6 +43,7 @@ def init_db():
 
 
 def _hash(password: str) -> str:
+    # one-way SHA256 hash — passwords are never stored as plain text
     return hashlib.sha256(password.encode()).hexdigest()
 
 
@@ -46,6 +53,7 @@ def create_user(username: str, password: str) -> bool:
     try:
         conn = sqlite3.connect(STORE_DB)
         conn.execute(
+            # hash the input password and compare against stored hash
             "INSERT INTO users VALUES (?,?,?,?)",
             (str(uuid.uuid4()), username, _hash(password), datetime.now().isoformat())
         )
@@ -59,6 +67,7 @@ def create_user(username: str, password: str) -> bool:
 def verify_user(username: str, password: str):
     conn = sqlite3.connect(STORE_DB)
     row = conn.execute(
+        # hash the input password and compare against stored hash
         "SELECT id FROM users WHERE username=? AND password_hash=?",
         (username, _hash(password))
     ).fetchone()
@@ -69,6 +78,7 @@ def verify_user(username: str, password: str):
 # ── Chats ─────────────────────────────────────────────────────────────────────
 
 def create_chat(user_id: str, title: str = "New Chat") -> str:
+    # unique id for this chat
     chat_id = str(uuid.uuid4())
     now = datetime.now().isoformat()
     conn = sqlite3.connect(STORE_DB)
@@ -78,12 +88,13 @@ def create_chat(user_id: str, title: str = "New Chat") -> str:
     )
     conn.commit()
     conn.close()
-    return chat_id
+    return chat_id  # returned to app.py so it can call load_chat(chat_id)
 
 
 def get_user_chats(user_id: str) -> list:
     conn = sqlite3.connect(STORE_DB)
     rows = conn.execute(
+
         "SELECT id, title, csv_filename FROM chats WHERE user_id=? ORDER BY updated_at DESC",
         (user_id,)
     ).fetchall()
@@ -106,6 +117,7 @@ def get_chat(chat_id: str) -> dict | None:
 
 def update_chat_title(chat_id: str, title: str):
     conn = sqlite3.connect(STORE_DB)
+    # called when user renames a chat OR when CSV is uploaded and title is auto-set
     conn.execute("UPDATE chats SET title=? WHERE id=?", (title, chat_id))
     conn.commit()
     conn.close()
@@ -114,6 +126,7 @@ def update_chat_title(chat_id: str, title: str):
 def update_chat_csv(chat_id: str, filename: str, db_path: str):
     conn = sqlite3.connect(STORE_DB)
     conn.execute(
+        # links this chat to its sqlite database
         "UPDATE chats SET csv_filename=?, csv_db_path=? WHERE id=?",
         (filename, db_path, chat_id)
     )
@@ -138,6 +151,7 @@ def save_message(chat_id: str, role: str, content: str, charts_json: str = None)
         "INSERT INTO messages VALUES (?,?,?,?,?,?)",
         (str(uuid.uuid4()), chat_id, role, content, charts_json, now)
     )
+    # update chat's updated_at so it moves to top of sidebar list
     conn.execute("UPDATE chats SET updated_at=? WHERE id=?", (now, chat_id))
     conn.commit()
     conn.close()
